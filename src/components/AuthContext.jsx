@@ -6,7 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider= ({children})=>{
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [privateKey, setPrivateKey] = useState(null);
+    const [password, setPassword] = useState(null);
 
 
     function isValidExtendedKey(key) {
@@ -29,7 +29,7 @@ export const AuthProvider= ({children})=>{
             // Check if the decrypted value is a valid Ethereum address
             if (isValidExtendedKey(decryptedMasterKey)) {
                 setIsAuthenticated(true);
-                setPrivateKey(decryptedMasterKey);
+                setPassword(password);
                 return true;
             } else {
                 console.error('Invalid wallet address format:', decryptedMasterKey);
@@ -41,7 +41,7 @@ export const AuthProvider= ({children})=>{
         }
         return false;
     }
-    return <AuthContext.Provider value = {{isAuthenticated, authenticate,privateKey}}>
+    return <AuthContext.Provider value = {{isAuthenticated, authenticate, password}}>
         {children}
     </AuthContext.Provider>
 }

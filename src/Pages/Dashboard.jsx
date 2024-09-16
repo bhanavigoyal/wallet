@@ -11,7 +11,7 @@ export const Dashboard=()=>{
     const [addresses, setAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState();
     const [loading, setLoading] = useState(true)
-    const {} = useAuth();
+    const {password} = useAuth();
 
     const fetchBalance = async (address)=>{
         setLoading(true)
@@ -36,7 +36,7 @@ export const Dashboard=()=>{
         if (savedIndex) {
             const index = parseInt(savedIndex, 10);
             for (let i = 0; i < index; i++) {
-                const address = addWallet("6789", i).address; // Derive the address from each index
+                const address = addWallet(password, i).address; // Derive the address from each index
                 savedAddresses.push(address);
             }
             setAddresses(savedAddresses);
@@ -54,7 +54,7 @@ export const Dashboard=()=>{
     }, [addresses]);
 
     const generateNewWAllet = async()=>{
-        const newWallet = await addWallet("6789", currentIndex);
+        const newWallet = await addWallet(password, currentIndex);
         if (!newWallet.error) {
             setAddresses([...addresses, newWallet.address]);
             const newIndex = currentIndex + 1;
@@ -108,19 +108,23 @@ function Dropdown({addresses, onSelectAddress}){
         console.log(isOpen)
     };
 
-    return <div>
-        <button onClick={toggleDropdown} id="dropdownDefaultButton" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">Your Addresses <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+    const formatAddress = (address) => {
+        return `${address.slice(0, 8)}.....${address.slice(-6)}`;
+    };
+
+    return <div className="relative">
+        <button onClick={toggleDropdown} id="dropdownDefaultButton" className="border p-3 rounded-md border-sky-900 bg-sky-900 hover:bg-sky-600 hover:cursor-pointer inline-flex items-center" type="button">Your Addresses <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
         </svg>
         </button>
 
         {isOpen ?(
-        <div className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-            <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+        <div className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 mt-2 max-h-60 overflow-y-auto">
+            <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" >
                 {addresses.map((address, index)=>(
                     <li key={index}>
-                        <button onClick={()=>onSelectAddress(address)}>
-                            {address}
+                        <button className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600" onClick={()=>onSelectAddress(address)}>
+                            {formatAddress(address)}
                         </button>
                     </li>
                 ))}
