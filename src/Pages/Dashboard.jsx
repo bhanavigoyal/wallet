@@ -4,6 +4,7 @@ import { useAuth } from "../components/AuthContext";
 import { ethers } from "ethers";
 import { Button } from "../components/Button";
 import { addWallet } from "../utils/addWallet";
+import { CopyButton } from "../components/CopyButton";
 
 export const Dashboard=()=>{
     const [balance, setBalance] = useState('');
@@ -80,9 +81,12 @@ export const Dashboard=()=>{
                 <Button label={"Add Wallet"} onClick={generateNewWAllet}/>
             </div>
             <div className="pt-10">
-                <div className="flex">
+                <div className="flex items-center">
                     <div>{selectedAddress}</div>
-                    <div className="pl-2">Copy address</div>
+                    <div className="pl-2">
+                        <CopyButton textToCopy={selectedAddress}/>
+                    </div>
+
                 </div> 
                 <div className="pt-5">
 

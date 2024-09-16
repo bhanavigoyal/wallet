@@ -9,6 +9,7 @@ import { CheckBox } from "../components/CheckBox"
 import { useNavigate } from "react-router-dom"
 import { generateMnemonic, mnemonicToSeed } from "bip39"
 import { addWallet } from "../utils/addWallet"
+import { CopyButton } from "../components/CopyButton"
 
 window.Buffer = window.Buffer || Buffer;
 
@@ -79,7 +80,8 @@ export const CreateWallet=()=>{
                     
                 ):<div className="flex flex-col items-center">
                 <div className="font-bold">Mnemonic Phrase: </div>
-                <div className="text-sky-300 text-nowrap">{mnemonic}</div>
+                <div className="text-sky-300 text-nowrap pb-2">{mnemonic}</div>
+                <CopyButton textToCopy={mnemonic}/>
                 <div className="pt-4 text-sm ">Store this phrase securely. You will need it to recover your wallet.</div>
                 <div className="text-sky-700 text-xs underline pt-5 hover:cursor-pointer" onClick={handleRegenrate}>Regenrate</div>
                 <div className="pt-14 pb-5">
