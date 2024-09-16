@@ -16,13 +16,12 @@ export const Dashboard=()=>{
 
     const fetchBalance = async (address)=>{
         setLoading(true)
-        console.log("here")
         try{
             if (/^(0x)?[0-9a-fA-F]{40}$/.test(address)) {
-            const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/462c816ec62d43da906f4812f3c556c3');
-            const balance = await provider.getBalance(address);
-            setLoading(false)
-            setBalance(ethers.formatEther(balance));
+                const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/462c816ec62d43da906f4812f3c556c3');
+                const balance = await provider.getBalance(address);
+                setLoading(false)
+                setBalance(ethers.formatEther(balance));
             }else{
                 throw new Error("invalid format")
             }
@@ -37,20 +36,20 @@ export const Dashboard=()=>{
         if (savedIndex) {
             const index = parseInt(savedIndex, 10);
             for (let i = 0; i < index; i++) {
-                const address = addWallet(password, i).address; // Derive the address from each index
+                const address = addWallet(password, i).address; 
                 savedAddresses.push(address);
             }
             setAddresses(savedAddresses);
             setCurrentIndex(index);
         } else {
-            setCurrentIndex(1);  // Set to 1 if no index is saved
+            setCurrentIndex(1);  
         }
     },[])
 
     useEffect(() => {
         if (addresses.length > 0 && !selectedAddress) {
-            setSelectedAddress(addresses[0]);  // Set first address if none selected
-            fetchBalance(addresses[0]);  // Fetch balance of the first address
+            setSelectedAddress(addresses[0]);  
+            fetchBalance(addresses[0]);  
         }
     }, [addresses]);
 
@@ -109,7 +108,6 @@ function Dropdown({addresses, onSelectAddress}){
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
-        console.log(isOpen)
     };
 
     const formatAddress = (address) => {

@@ -36,7 +36,6 @@ export const CreateWallet=()=>{
             const hdNode = HDNodeWallet.fromSeed(seed);
 
             const encryptedMasterKey = CryptoJS.AES.encrypt(hdNode.extendedKey, password).toString();
-            console.log(encryptedMasterKey)
             localStorage.setItem('encryptedMasterKey', encryptedMasterKey);
             const response = await addWallet(password, 0);
             if (response.error){

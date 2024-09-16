@@ -16,14 +16,13 @@ export const addWallet=(password, currentIndex)=>{
             error: "decryption failed"
         }
     }
-    
+
     const hdNode = HDNodeWallet.fromExtendedKey(decryptedMasterKey);
     const derivationPath = `m/44'/60'/0'/0/${currentIndex}`;
     const child = hdNode.derivePath(derivationPath);
     const privateKey = child.privateKey;
     const wallet = new Wallet(privateKey);
 
-    console.log(wallet.address);
 
     return {
         address: wallet.address,
