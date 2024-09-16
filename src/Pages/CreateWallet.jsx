@@ -1,4 +1,4 @@
-import { ethers } from "ethers"
+import { ethers, HDNodeWallet, Wallet } from "ethers"
 import { Button } from "../components/Button"
 import { Heading } from "../components/Heading"
 import { useState } from "react"
@@ -7,6 +7,8 @@ import { Buffer } from "buffer"
 import { InputBox } from "../components/InputBox"
 import { CheckBox } from "../components/CheckBox"
 import { useNavigate } from "react-router-dom"
+import { generateMnemonic, mnemonicToSeed } from "bip39"
+import { addWallet } from "../utils/addWallet"
 
 window.Buffer = window.Buffer || Buffer;
 
@@ -17,21 +19,31 @@ export const CreateWallet=()=>{
     const [checkPassword, setCheckPassword] = useState(false);
     const [checkMnemonic, setCheckMnemonic] = useState(false);
 
+
     const navigate = useNavigate();
 
     const handleGenerate=()=>{
-        const wallet = ethers.Wallet.createRandom();
-        const newMnemonic = wallet.mnemonic.phrase;
+        const newMnemonic = generateMnemonic()
         setMnemonic(newMnemonic);
         setCheckMnemonic(false);
     }
 
-    const handleSave=()=>{
+    const handleSave=async()=>{
         if(mnemonic){
-            const wallet = ethers.Wallet.fromPhrase(mnemonic);
-            const privateKey = wallet.privateKey;
-            const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, password).toString();
-            localStorage.setItem('encryptedPrivateKey', encryptedPrivateKey);
+
+            const seed = await mnemonicToSeed(mnemonic);
+            const hdNode = HDNodeWallet.fromSeed(seed);
+
+            const encryptedMasterKey = CryptoJS.AES.encrypt(hdNode.extendedKey, password).toString();
+            console.log(encryptedMasterKey)
+            localStorage.setItem('encryptedMasterKey', encryptedMasterKey);
+            const response = await addWallet(password, 0);
+            if (response.error){
+                console.error(response.error);
+            }else{
+                localStorage.setItem("currentIndex", 1)
+            }
+
             navigate("/dashboard")
         }
         

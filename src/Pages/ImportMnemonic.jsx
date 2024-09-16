@@ -4,6 +4,9 @@ import { Button } from "../components/Button"
 import CryptoJS from 'crypto-js';
 import { useNavigate } from "react-router-dom"
 import { ethers } from "ethers";
+import { HDNodeWallet } from "ethers";
+import { mnemonicToSeed } from "bip39";
+import { addWallet } from "../utils/addWallet";
 
 export const ImportMnemonic=()=>{
 
@@ -12,13 +15,20 @@ export const ImportMnemonic=()=>{
 
     const navigate = useNavigate();
 
-    const handleImportMnemonic=()=>{
+    const handleImportMnemonic=async()=>{
         if(importedMnemonic){
             try{
-                const wallet = ethers.Wallet.fromPhrase(importedMnemonic);
-                const privateKey = wallet.privateKey;
-                const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, password).toString()
-                localStorage.setItem('encryptedPrivateKey', encryptedPrivateKey);
+                const seed = await mnemonicToSeed(importedMnemonic);
+                const hdNode = HDNodeWallet.fromSeed(seed);
+
+                const encryptedMasterKey = CryptoJS.AES.encrypt(hdNode.extendedKey, password).toString()
+                localStorage.setItem('encryptedMasterKey', encryptedMasterKey);
+                const response = await addWallet(password, 0);
+                if (response.error){
+                    console.error(response.error);
+                }else{
+                    localStorage.setItem("currentIndex", 1)
+                }
                 navigate("/dashboard")
             }catch(e){
                 console.log(e)

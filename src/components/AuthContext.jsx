@@ -8,24 +8,34 @@ export const AuthProvider= ({children})=>{
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [privateKey, setPrivateKey] = useState(null);
 
+
+    function isValidExtendedKey(key) {
+        // Assuming base58 format, you should use a library to validate base58 keys
+        // This regex is simplistic and might not cover all valid base58 formats
+        const base58Regex = /^[A-HJ-NP-Za-km-z1-9]{51,}$/;
+        return base58Regex.test(key);
+    }
+
     const authenticate = (password)=>{
-        const encryptedPrivateKey = localStorage.getItem('encryptedPrivateKey');
-        if(!encryptedPrivateKey){
-            throw new Error("no encrypted key found in the local storage")
+        const encryptedMasterKey = localStorage.getItem('encryptedMasterKey');
+        if(!encryptedMasterKey){
+            throw new Error("no encrypted address found in the local storage")
         }
 
         try{
-            const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, password);
-            const decryptedPrivateKey = bytes.toString(CryptoJS.enc.Utf8);
+            const bytes = CryptoJS.AES.decrypt(encryptedMasterKey, password);
+            const decryptedMasterKey= bytes.toString(CryptoJS.enc.Utf8);
 
-            if (/^(0x)?[0-9a-fA-F]{64}$/.test(decryptedPrivateKey)) {
+            // Check if the decrypted value is a valid Ethereum address
+            if (isValidExtendedKey(decryptedMasterKey)) {
                 setIsAuthenticated(true);
-                setPrivateKey(decryptedPrivateKey);
+                setPrivateKey(decryptedMasterKey);
                 return true;
-              } else {
-                console.error('Invalid private key format:', decryptedPrivateKey);
+            } else {
+                console.error('Invalid wallet address format:', decryptedMasterKey);
                 return false;
-              }
+            }
+
         }catch(err){
             console.error('Decryption failed',err)
         }
